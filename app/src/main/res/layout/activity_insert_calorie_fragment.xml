@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/breakfastBtn"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginRight="120dp"
+            android:layout_marginTop="112dp"
+            android:src="@drawable/greybox"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/lunchBtn"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="112dp"
+            android:src="@drawable/greybox"
+            app:layout_constraintLeft_toRightOf="@id/breakfastBtn"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/dinnerBtn"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginRight="120dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/greybox"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/breakfastBtn" />
+
+        <ImageView
+            android:id="@+id/snackBtn"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/greybox"
+            app:layout_constraintLeft_toRightOf="@id/dinnerBtn"
+            app:layout_constraintTop_toBottomOf="@id/lunchBtn" />
+
+        <TextView
+            android:id="@+id/todayKcal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="96dp"
+            android:text="오늘 하루 섭취 칼로리 : "
+            app:layout_constraintBottom_toTopOf="@id/targetKcal"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/todayKcalVal"
+
+            />
+
+        <TextView
+            android:id="@+id/todayKcalVal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="1000kcal"
+            app:layout_constraintBottom_toTopOf="@id/targetKcal"
+            app:layout_constraintLeft_toRightOf="@id/todayKcal"
+
+            />
+
+        <Button
+            android:id="@+id/targetKcal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="목표 칼로리 설정"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

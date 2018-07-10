@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/piechart2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:adjustViewBounds="true"
+                android:maxHeight="300dp"
+                android:maxWidth="300dp"
+                android:src="@drawable/piechart2" />
+
+
+            <TextView
+                android:id="@+id/walktext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/piechart2"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="50dp"
+                android:text="오늘의 걸음수 : 5,000보"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/goalsteps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/walktext"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="목표 걸음수 설정" />
+
+
+        </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
+</layout>

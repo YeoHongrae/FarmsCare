@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="hint">
+        <item>기억에 남는 추억의 장소는?</item>
+        <item>자신의 인생 좌우명은?</item>
+        <item>자신의 보물 제 1호는?</item>
+        <item>내가 좋아하는 캐릭터는?</item>
+        <item>가장 기억에 남는 선생님 성함은?</item>
+    </string-array>
+
+    <string-array name="spinner_array">
+        <item>주간</item>
+        <item>월간</item>
+    </string-array>
+
+</resources>

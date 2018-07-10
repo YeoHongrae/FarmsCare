@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/piechart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:adjustViewBounds="true"
+                android:maxHeight="300dp"
+                android:maxWidth="300dp"
+                android:src="@drawable/piechart" />
+
+
+            <TextView
+                android:id="@+id/sleep"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/piechart"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="50dp"
+                android:text="오늘 하루 취침시간 : 8시간"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/sleep"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:text="하루 권장 수면시간은 성인 기준 8시간입니다."
+                android:textSize="14dp" />
+
+
+        </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
+</layout>

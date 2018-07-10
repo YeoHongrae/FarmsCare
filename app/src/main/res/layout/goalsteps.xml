@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/goal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="목표 걸음수 : "
+                android:textSize="20dp" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35dp"
+                android:layout_toRightOf="@+id/goal" />
+
+            <TextView
+                android:id="@+id/info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/goal"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="하루 권장 걸음수는 10,000보입니다."
+                android:textSize="12dp" />
+
+            <Button
+                android:id="@+id/setBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/info"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="등록 완료"
+                android:textSize="18dp" />
+
+        </RelativeLayout>
+
+    </android.support.constraint.ConstraintLayout>
+</layout>
