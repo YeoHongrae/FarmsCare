@@ -16,7 +16,6 @@
             android:layout_width="fill_parent"
             android:layout_height="300dp"
             android:foregroundGravity="top">
-
             <com.john.waveview.WaveView
                 android:id="@+id/wave_view"
                 android:layout_width="match_parent"
@@ -27,14 +26,14 @@
                 wave:progress="0"
                 wave:wave_height="little"
                 wave:wave_hz="normal"
-                wave:wave_length="middle" />
+                wave:wave_length="middle"/>
 
             <ImageView
                 android:id="@+id/sbb"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:src="@drawable/sb1" />
+                android:src="@drawable/sb1"
+                android:scaleType="fitXY" />
         </FrameLayout>
 
 
@@ -44,16 +43,17 @@
             android:layout_width="140dp"
             android:layout_height="140dp"
             android:layout_marginLeft="20dp"
+            app:layout_constraintTop_toBottomOf="@id/wtpcc"
             app:layout_constraintStart_toStartOf="@id/wtpcc"
-            app:layout_constraintTop_toBottomOf="@id/wtpcc">
+            >
 
             <ImageView
                 android:id="@+id/wt1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|left"
-                android:padding="0dp"
                 android:scaleType="centerInside"
+                android:padding="0dp"
                 android:src="@drawable/water1" />
 
 
@@ -62,9 +62,9 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="right|top"
-                android:layout_margin="5dp"
                 android:background="@android:color/transparent"
                 android:scaleType="centerInside"
+                android:layout_margin="5dp"
                 android:src="@drawable/plus_push" />
 
             <ImageButton
@@ -72,22 +72,21 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="right|bottom"
-                android:layout_margin="5dp"
                 android:background="@android:color/transparent"
                 android:scaleType="centerInside"
+                android:layout_margin="5dp"
                 android:src="@drawable/minus_push" />
 
         </FrameLayout>
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="물 한컵 - 100ml"
             android:textColor="#ff000000"
             android:textSize="15dp"
-            app:layout_constraintEnd_toEndOf="@id/ltwt"
+            app:layout_constraintTop_toBottomOf="@id/ltwt"
             app:layout_constraintStart_toStartOf="@id/ltwt"
-            app:layout_constraintTop_toBottomOf="@id/ltwt" />
+            app:layout_constraintEnd_toEndOf="@id/ltwt"/>
 
         <!--물 한병 추가삭제-->
 
@@ -96,8 +95,9 @@
             android:layout_width="140dp"
             android:layout_height="140dp"
             android:layout_marginRight="20dp"
+            app:layout_constraintTop_toBottomOf="@id/wtpcc"
             app:layout_constraintEnd_toEndOf="@id/wtpcc"
-            app:layout_constraintTop_toBottomOf="@id/wtpcc">
+            >
 
             <ImageView
                 android:id="@+id/wt2"
@@ -113,8 +113,8 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="right|top"
-                android:layout_margin="5dp"
                 android:background="@android:color/transparent"
+                android:layout_margin="5dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/plus_push" />
 
@@ -123,8 +123,8 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="right|bottom"
-                android:layout_margin="5dp"
                 android:background="@android:color/transparent"
+                android:layout_margin="5dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/minus_push" />
         </FrameLayout>
@@ -135,9 +135,11 @@
             android:text="물 한병 - 500ml"
             android:textColor="#ff000000"
             android:textSize="15dp"
-            app:layout_constraintEnd_toEndOf="@id/bgwt"
+            app:layout_constraintTop_toBottomOf="@id/bgwt"
             app:layout_constraintStart_toStartOf="@id/bgwt"
-            app:layout_constraintTop_toBottomOf="@id/bgwt" />
+            app:layout_constraintEnd_toEndOf="@id/bgwt"
+            />
+
 
 
         <!--현재 물 섭취량, 추천 물 섭취량-->
@@ -145,7 +147,7 @@
             android:id="@+id/totalwt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="25dp"
+            android:layout_marginBottom="125dp"
             android:text="오늘은 총 0ml의 물을 섭취했습니다."
             android:textColor="#ff000000"
             android:textSize="18dp"

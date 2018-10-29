@@ -26,23 +26,16 @@ public class PagerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_helper_frag, null);
 
-
-
-        switch (position){
+        switch (position){ //TODO 사진 넣기
             case 0:
-                ((ImageView)view.findViewById(R.id.position)).setImageResource(R.drawable.ic_face_black_24dp);
                 return view;
             case 1:
-                ((ImageView)view.findViewById(R.id.position)).setImageResource(R.drawable.ic_chevron_left_black_24dp);
                 return view;
             case 2:
-                // 사진
                 return view;
             case 3:
-                //사진
                 return view;
             case 4:
-                //사진
                 return view;
         }
 

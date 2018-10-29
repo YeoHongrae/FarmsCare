@@ -42,13 +42,13 @@ public class SearchCalorie extends AppCompatActivity {
         txtView = findViewById(R.id.text);
 
         String serviceUrl =
-                "http://openapi.foodsafetykorea.go.kr/api/4b05e015a9004e25960c/I0750/xml/1/5";
+                "http://openapi.foodsafetykorea.go.kr/api/4b05e015a9004e25960c/I0750/xml/1/1";
 
         String serviceKey = "4b05e015a9004e25960c";
         serviceKey = URLEncoder.encode(serviceKey);
         String NUM = "1";
-        String strUrl = serviceUrl + "ServiceKey=" + serviceKey + "&NUM=" + NUM;
-        new DownloadWebpageTask().execute(strUrl);
+        String strUrl = serviceUrl + "?ServiceKey=" + serviceKey + "&NUM=" + NUM;
+        new DownloadWebpageTask().execute(strUrl); // strUrl 값으로 XML 다운받아옴
 
     }
 
@@ -72,11 +72,11 @@ public class SearchCalorie extends AppCompatActivity {
             } catch (IOException e) {
                 return "다운로드 실패";
             }
-        }
+        } // xml 다운
 
         protected void onPostExecute(String result) {
-            txtView.append(result + "\n");
-            txtView.append("============= 파싱결과 ============");
+            //txtView.append(result + "\n"); // 파싱 실행
+            txtView.append("============= 파싱결과 ============" + "\n");
 
             try {
                 XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -91,7 +91,7 @@ public class SearchCalorie extends AppCompatActivity {
 
                     } else if (eventType == XmlPullParser.START_TAG) {
                         String tag_name = xpp.getName();
-                        if (tag_name.equals("NUM") || tag_name.equals("FOOD_CD"))
+                        if (tag_name.equals("NUM") || tag_name.equals("NUTR_CONT1"))
                             bSet = true;
 
                     } else if (eventType == XmlPullParser.TEXT) {

@@ -1,21 +1,27 @@
 package com.example.hong.boaaproject.mainActivity.sleep;
 
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.TabHost;
+import android.widget.Toast;
 
 import com.example.hong.boaaproject.R;
+import com.example.hong.boaaproject.mainActivity.calorie.CalorieGraphFragment;
+import com.example.hong.boaaproject.mainActivity.calorie.InsertCalorieFragment;
+import com.ogaclejapan.smarttablayout.SmartTabLayout;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 public class SleepTab extends AppCompatActivity {
 
     Toolbar toolbar;
-    TabHost tabHost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tab_sleep);
+        setContentView(R.layout.activity_sleep_tab);
 
         toolbar = (Toolbar) findViewById(R.id.toolBar);
         toolbar.setTitle("");
@@ -23,17 +29,17 @@ public class SleepTab extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-        tabHost = (TabHost) findViewById(R.id.tabhost);
-        tabHost.setup();
+        FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+                getSupportFragmentManager(), FragmentPagerItems.with(this)
+                .add("수면 입력", InsertSleepFragment.class)
+                .add("수면 그래프", SleepGraphFragment.class)
+                .create());
 
+        ViewPager viewPager = findViewById(R.id.viewPager);
+        viewPager.setAdapter(adapter);
 
-        TabHost.TabSpec insertTab = tabHost.newTabSpec("INSERT").setIndicator("수면량");
-        insertTab.setContent(R.id.insertTab);
-        tabHost.addTab(insertTab);
-
-        TabHost.TabSpec graphTab = tabHost.newTabSpec("GRAPH").setIndicator("수면 그래프");
-        graphTab.setContent(R.id.graphTab);
-        tabHost.addTab(graphTab);
+        SmartTabLayout viewPagerTab = findViewById(R.id.viewPagerTab);
+        viewPagerTab.setViewPager(viewPager);
 
 
     }
@@ -56,7 +62,6 @@ public class SleepTab extends AppCompatActivity {
 
     }
 
-    ;
 
 }
 

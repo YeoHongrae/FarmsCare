@@ -1,21 +1,27 @@
 package com.example.hong.boaaproject.mainActivity.walk;
 
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.TabHost;
+import android.widget.Toast;
 
 import com.example.hong.boaaproject.R;
+import com.example.hong.boaaproject.mainActivity.sleep.InsertSleepFragment;
+import com.example.hong.boaaproject.mainActivity.sleep.SleepGraphFragment;
+import com.ogaclejapan.smarttablayout.SmartTabLayout;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 public class WalkTab extends AppCompatActivity {
 
     Toolbar toolbar;
-    TabHost tabHost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tab_walk);
+        setContentView(R.layout.activity_walk_tab);
 
         toolbar = (Toolbar) findViewById(R.id.toolBar);
         toolbar.setTitle("");
@@ -23,17 +29,18 @@ public class WalkTab extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-        tabHost = (TabHost) findViewById(R.id.tabhost);
-        tabHost.setup();
 
+        FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+                getSupportFragmentManager(), FragmentPagerItems.with(this)
+                .add("걸음 입력", InsertWalkFragment.class)
+                .add("걸음 그래프", WalkGraphFragment.class)
+                .create());
 
-        TabHost.TabSpec insertTab = tabHost.newTabSpec("INSERT").setIndicator("오늘의 걸음수");
-        insertTab.setContent(R.id.insertTab);
-        tabHost.addTab(insertTab);
+        ViewPager viewPager = findViewById(R.id.viewPager);
+        viewPager.setAdapter(adapter);
 
-        TabHost.TabSpec graphTab = tabHost.newTabSpec("GRAPH").setIndicator("걷기 그래프");
-        graphTab.setContent(R.id.graphTab);
-        tabHost.addTab(graphTab);
+        SmartTabLayout viewPagerTab = findViewById(R.id.viewPagerTab);
+        viewPagerTab.setViewPager(viewPager);
 
 
     }
@@ -51,5 +58,5 @@ public class WalkTab extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    ;
+
 }
