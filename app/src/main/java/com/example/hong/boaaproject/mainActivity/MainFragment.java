@@ -276,8 +276,6 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
                         .load(userImgURL)
                         .into(a.ivMyPicture);
 
-                Toast.makeText(MainFragment.this.getContext(), userImgURL, Toast.LENGTH_SHORT).show();
-
             } catch (Exception e) {
                 e.printStackTrace();
             }

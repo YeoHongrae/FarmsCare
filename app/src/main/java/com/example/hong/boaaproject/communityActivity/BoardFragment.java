@@ -110,7 +110,7 @@ public class BoardFragment extends android.support.v4.app.Fragment {
         protected void onPostExecute(String result) { // 해당 결과를 처리해주는 함수
 
             int count = 0;
-            String boardContent, boardName, boardDate;
+            String boardContent, userID, boardDate, boardComment, boardImgURL, boardNum;
 
             try {
 
@@ -121,11 +121,18 @@ public class BoardFragment extends android.support.v4.app.Fragment {
 
                     JSONObject object = jsonArray.getJSONObject(count); // 현재 배열의 원소값 저장
                     boardContent = object.getString("boardContent"); //boardContent 부분을 가져옴
-                    boardName = object.getString("boardName");
+                    userID = object.getString("userID");
                     boardDate = object.getString("boardDate");
-                    BoardModel boardModel = new BoardModel(boardContent, boardName, boardDate); // 하나의 게시물에 관한 객체 생성
+                    boardComment = object.getString("boardComment");
+                    boardImgURL = object.getString("boardImgURL");
+                    boardNum = object.getString("boardNum");
+
+                    BoardModel boardModel = new BoardModel( userID, boardNum, boardComment, boardImgURL, boardContent, boardDate); // 하나의 게시물에 관한 객체 생성
                     boardModels.add(boardModel); // 리스트에 추가
                     count++; // 전체 검색
+
+                    Log.d("TESTETSEETES", boardNum);
+                    Log.d("TESTETSEETES", boardNum);
 
                 }
 

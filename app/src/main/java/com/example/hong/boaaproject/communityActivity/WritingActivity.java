@@ -27,6 +27,7 @@ import com.example.hong.boaaproject.R;
 import com.example.hong.boaaproject.databinding.ActivityWritingBinding;
 import com.example.hong.boaaproject.mainActivity.Register2Activity;
 import com.example.hong.boaaproject.menu.SelectDialog;
+import com.example.hong.boaaproject.menu.SelectDialog2;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -54,13 +55,14 @@ public class WritingActivity extends AppCompatActivity {
         a = DataBindingUtil.setContentView(this, R.layout.activity_writing);
         mContext2 = this;
 
-        final SelectDialog selectDialog = new SelectDialog(this);
+        final SelectDialog2 selectDialog2 = new SelectDialog2(this);
 
         a.LLPicRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                selectDialog.show();
+                selectDialog2.show();
+                checkPermission();
 
             }
         });
@@ -109,7 +111,7 @@ public class WritingActivity extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
 
                     galleryAddPic();
-                    a.ivPicture.setImageURI(albumURI); //TODO 공유탭에서도 사용하려면 액티비티 하나 만들고, 서버에 올리고 받고 ,..?
+                    a.ivPicture.setImageURI(albumURI);
                 }
                 break;
         }

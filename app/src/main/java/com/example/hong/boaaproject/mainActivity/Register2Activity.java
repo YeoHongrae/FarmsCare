@@ -58,22 +58,22 @@ import java.util.Date;
 
 public class Register2Activity extends AppCompatActivity {
 
-    ActivityRegister2Binding a;
+    //TODO 이미지 호출 부분 최적화
+
+    private ActivityRegister2Binding a;
     private ArrayAdapter<String> adapter;
-    String userID, userHeight, userWeight, userGender, userBirth, userImgURL, currentPhotoPath, imageFileName;
+    private String userID, userHeight, userWeight, userGender, userBirth, userImgURL, currentPhotoPath, imageFileName, uploadFileName, uploadFilePath, uploadServerUri;
 
     private static final int MY_PERMISSION_CAMERA = 1;
     private static final int REQUEST_TAKE_PHOTO = 2;
     private static final int REQUEST_TAKE_ALBUM = 3;
     private static final int REQUEST_IMAGE_CROP = 4;
+    private int serverResponseCode = 0;
 
-    Uri imageUri;
-    Uri photoURI, albumURI;
+    private Uri imageUri;
+    private Uri photoURI, albumURI;
 
-    int serverResponseCode = 0;
-    String uploadServerUri;
-    String uploadFilePath;
-    String uploadFileName;
+
 
 
     public static Context mContext; // 다른 액티비티에서 현재 액티비티의 함수 호출을 위한 선언

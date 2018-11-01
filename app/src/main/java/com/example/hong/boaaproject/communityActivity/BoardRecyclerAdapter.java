@@ -35,9 +35,11 @@ public class BoardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-        ((CustomViewHolder) holder).tvName.setText(boardModels.get(position).BoardName);
-        ((CustomViewHolder) holder).tvContent.setText(boardModels.get(position).BoardContent);
-        ((CustomViewHolder) holder).tvDate.setText(boardModels.get(position).BoardDate);
+        ((CustomViewHolder) holder).tvName.setText(boardModels.get(position).userID);
+        ((CustomViewHolder) holder).tvContent.setText(boardModels.get(position).boardContent);
+        ((CustomViewHolder) holder).tvDate.setText(boardModels.get(position).boardDate);
+       // ((CustomViewHolder) holder).ivImage.setText(boardModels.get(position).boardImgURL);
+        ((CustomViewHolder) holder).etComment.setText(boardModels.get(position).boardComment);
 
     }
 
@@ -48,17 +50,17 @@ public class BoardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private class CustomViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView iv, ivFavorite, ivImage;
-        TextView tvName, tvContent, tvFavorite, tvNicName, tvDate;
+        //ImageView iv, ivFavorite, ivImage;
+        TextView tvName, tvContent, tvFavorite, tvNicName, tvDate, ivImage;
         EditText etComment;
 
 
         public CustomViewHolder(View view) {
             super(view);
 
-            iv = view.findViewById(R.id.iv);
-            ivFavorite = view.findViewById(R.id.ivFavorite);
-            ivImage = view.findViewById(R.id.ivImage);
+           // iv = view.findViewById(R.id.iv);
+           // ivFavorite = view.findViewById(R.id.ivFavorite);
+//            ivImage = view.findViewById(R.id.ivImage);
             tvName = view.findViewById(R.id.tvName);
             tvContent = view.findViewById(R.id.tvContent);
             tvFavorite = view.findViewById(R.id.tvFavorite);
