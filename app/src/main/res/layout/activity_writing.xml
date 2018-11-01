@@ -96,7 +96,7 @@
                 </LinearLayout>
 
                 <EditText
-                    android:id="@+id/etGroupTitle"
+                    android:id="@+id/etBoardContent"
                     android:layout_width="match_parent"
                     android:layout_height="80dp"
                     android:layout_marginHorizontal="16dp"

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -23,13 +24,26 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.example.hong.boaaproject.R;
 import com.example.hong.boaaproject.databinding.ActivityWritingBinding;
+import com.example.hong.boaaproject.mainActivity.KeepLoginActivity;
+import com.example.hong.boaaproject.mainActivity.MainActivity;
 import com.example.hong.boaaproject.mainActivity.Register2Activity;
 import com.example.hong.boaaproject.menu.SelectDialog;
 import com.example.hong.boaaproject.menu.SelectDialog2;
 
+import org.json.JSONObject;
+
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -39,14 +53,17 @@ public class WritingActivity extends AppCompatActivity {
     public static Context mContext2;
 
 
-    String currentPhotoPath;
+    private String currentPhotoPath, imageFileName, uploadFileName, uploadFilePath, uploadServerUrl;
+    private String userID, boardContent, boardImgURL;
+
     private static final int MY_PERMISSION_CAMERA = 1;
     private static final int REQUEST_TAKE_PHOTO = 2;
     private static final int REQUEST_TAKE_ALBUM = 3;
     private static final int REQUEST_IMAGE_CROP = 4;
+    private int serverResponseCode = 0;
 
-    Uri imageUri;
-    Uri photoURI, albumURI;
+    private Uri imageUri;
+    private Uri photoURI, albumURI;
 
 
     @Override
@@ -54,6 +71,7 @@ public class WritingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         a = DataBindingUtil.setContentView(this, R.layout.activity_writing);
         mContext2 = this;
+        uploadServerUrl = "http://jbh9730.cafe24.com/UploadToServer2.php";
 
         final SelectDialog2 selectDialog2 = new SelectDialog2(this);
 
@@ -64,11 +82,178 @@ public class WritingActivity extends AppCompatActivity {
                 selectDialog2.show();
                 checkPermission();
 
+
             }
         });
 
+        a.btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                boardRegisterComplete();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        uploadFile(uploadFilePath + "" + uploadFileName);
+
+                    }
+
+                }).start();
+
+            }
+        });
 
     }
+
+    private void boardRegisterComplete() {
+
+        KeepLoginActivity keepLoginActivity = new KeepLoginActivity(this);
+
+        userID = keepLoginActivity.getUserID();
+        boardContent = a.etBoardContent.getText().toString();
+        boardImgURL = "http://jbh9730.cafe24.com/boardFiles/" + uploadFileName;
+
+        Response.Listener<String> responseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                try{
+                    JSONObject jsonResponse = new JSONObject(response);
+                    boolean success = jsonResponse.getBoolean("success");
+
+                    if(success){
+                        Toast.makeText(WritingActivity.this, "게시글 등록이 되었습니다.", Toast.LENGTH_SHORT).cancel();
+                        Intent intent = new Intent(WritingActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        };
+        BoardRegisterRequest boardRegisterRequest = new BoardRegisterRequest(userID, boardContent, boardImgURL, responseListener);
+        RequestQueue queue = Volley.newRequestQueue(WritingActivity.this);
+        queue.add(boardRegisterRequest);
+
+    }
+
+    private int uploadFile(String sourceFileUri) {
+
+        String fileName = sourceFileUri;
+
+        HttpURLConnection conn;
+        DataOutputStream dos;
+
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024;
+        File sourceFile = new File(sourceFileUri);
+
+        if (!sourceFile.isFile()) {
+
+            //Log.d("HONG", "UPLOAD FILE" + "SOURCE FILE NOT EXIST : " + uploadFilePath + "" + uploadFileName);
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //Log.d("HONG", "UPLOAD FILE" + "SOURCE FILE NOT EXIST : " + uploadFilePath + "" + uploadFileName);
+                }
+            });
+
+            return 0;
+
+        } else {
+            try {
+                FileInputStream fileInputStream = new FileInputStream(sourceFile);
+                URL url = new URL(uploadServerUrl);
+
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setUseCaches(false);
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Connection", "Keep-Alive");
+                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                conn.setRequestProperty("uploaded_file", fileName);
+
+                dos = new DataOutputStream(conn.getOutputStream());
+
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + fileName + "\"" + lineEnd);
+                dos.writeBytes(lineEnd);
+
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                buffer = new byte[bufferSize];
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                while (bytesRead > 0) {
+
+                    dos.write(buffer, 0, bufferSize);
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                }
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                serverResponseCode = conn.getResponseCode();
+                String serverResopnseMessage = conn.getResponseMessage();
+
+                //Log.i("HONG", "UPLOADfILE" + "HTTP RESPONSE IS : " + serverResopnseMessage + ":" + serverResponseCode);
+
+                if (serverResponseCode == 200) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //String msg = "FILE UPLOAD COMPLETED.\n\n SEE UPLOADED FILE HERE : \n\n" + uploadFileName;
+                            // Toast.makeText(Register2Activity.this, msg, Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+
+                fileInputStream.close();
+                dos.flush();
+                dos.close();
+
+            } catch (MalformedURLException ex) {
+                ex.printStackTrace();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Toast.makeText(Register2Activity.this, "MALFORMED URL EXCEPTION", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                //Log.e("HONG", "UPLOAD FILE TO SERVER" + "ERROR");
+            } catch (Exception e) {
+
+                e.printStackTrace();
+/*
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("HONG", "GOT EXCEPTION : SEE LOGCAT");
+
+                    }
+                });
+                Log.e("HONG", "UPLOAD FILE TO SERVER EXCEPTION" + "EXCEPTION : " + e.getMessage(), e);*/
+            }
+
+            return serverResponseCode;
+
+        }
+
+    }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -150,7 +335,7 @@ public class WritingActivity extends AppCompatActivity {
     private File createImageFile() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + ".jpg";
-        File imageFile = null;
+        File imageFile ;
         File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", "BOAA");
 
         if (!storageDir.exists()) {
