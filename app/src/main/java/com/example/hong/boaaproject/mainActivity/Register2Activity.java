@@ -38,11 +38,21 @@ import com.android.volley.toolbox.Volley;
 import com.example.hong.boaaproject.R;
 import com.example.hong.boaaproject.databinding.ActivityRegister2Binding;
 import com.example.hong.boaaproject.menu.SelectDialog;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.MalformedInputException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -50,7 +60,7 @@ public class Register2Activity extends AppCompatActivity {
 
     ActivityRegister2Binding a;
     private ArrayAdapter<String> adapter;
-    String userID, userHeight, userWeight, userGender, userBirth, currentPhotoPath;
+    String userID, userHeight, userWeight, userGender, userBirth, userImgURL, currentPhotoPath, imageFileName;
 
     private static final int MY_PERMISSION_CAMERA = 1;
     private static final int REQUEST_TAKE_PHOTO = 2;
@@ -60,6 +70,12 @@ public class Register2Activity extends AppCompatActivity {
     Uri imageUri;
     Uri photoURI, albumURI;
 
+    int serverResponseCode = 0;
+    String uploadServerUri;
+    String uploadFilePath;
+    String uploadFileName;
+
+
     public static Context mContext; // 다른 액티비티에서 현재 액티비티의 함수 호출을 위한 선언
 
     @Override
@@ -67,6 +83,7 @@ public class Register2Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         a = DataBindingUtil.setContentView(this, R.layout.activity_register2);
         mContext = this;
+        uploadServerUri = "http://jbh9730.cafe24.com/UploadToServer.php";
 
         genderSelect(); // 성별 선택
 
@@ -81,6 +98,24 @@ public class Register2Activity extends AppCompatActivity {
                 // 추가정보 등록 완료 ( 서버 연동 )
                 register2Complete();
 
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+
+                                //Log.d("HONG","UPLOADING");
+                            }
+                        });
+
+                        uploadFile(uploadFilePath + "" + uploadFileName);
+
+                    }
+                }).start();
             }
         });
 
@@ -94,6 +129,118 @@ public class Register2Activity extends AppCompatActivity {
         });
     }
 
+    public int uploadFile(String sourceFileUri) {
+
+        String fileName = sourceFileUri;
+
+        HttpURLConnection conn;
+        DataOutputStream dos;
+
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024;
+        File sourceFile = new File(sourceFileUri);
+
+        if (!sourceFile.isFile()) {
+
+            //Log.d("HONG", "UPLOAD FILE" + "SOURCE FILE NOT EXIST : " + uploadFilePath + "" + uploadFileName);
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //Log.d("HONG", "UPLOAD FILE" + "SOURCE FILE NOT EXIST : " + uploadFilePath + "" + uploadFileName);
+                }
+            });
+
+            return 0;
+        } else {
+            try {
+                FileInputStream fileInputStream = new FileInputStream(sourceFile);
+                URL url = new URL(uploadServerUri);
+
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setUseCaches(false);
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Connection", "Keep-Alive");
+                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                conn.setRequestProperty("uploaded_file", fileName);
+
+                dos = new DataOutputStream(conn.getOutputStream());
+
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + fileName + "\"" + lineEnd);
+                dos.writeBytes(lineEnd);
+
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                buffer = new byte[bufferSize];
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                while (bytesRead > 0) {
+
+                    dos.write(buffer, 0, bufferSize);
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                }
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                serverResponseCode = conn.getResponseCode();
+                String serverResopnseMessage = conn.getResponseMessage();
+
+                //Log.i("HONG", "UPLOADfILE" + "HTTP RESPONSE IS : " + serverResopnseMessage + ":" + serverResponseCode);
+
+                if (serverResponseCode == 200) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //String msg = "FILE UPLOAD COMPLETED.\n\n SEE UPLOADED FILE HERE : \n\n" + uploadFileName;
+                            // Toast.makeText(Register2Activity.this, msg, Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+
+                fileInputStream.close();
+                dos.flush();
+                dos.close();
+
+            } catch (MalformedURLException ex) {
+                ex.printStackTrace();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Toast.makeText(Register2Activity.this, "MALFORMED URL EXCEPTION", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                //Log.e("HONG", "UPLOAD FILE TO SERVER" + "ERROR");
+            } catch (Exception e) {
+
+                e.printStackTrace();
+/*
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("HONG", "GOT EXCEPTION : SEE LOGCAT");
+
+                    }
+                });
+                Log.e("HONG", "UPLOAD FILE TO SERVER EXCEPTION" + "EXCEPTION : " + e.getMessage(), e);*/
+            }
+
+            return serverResponseCode;
+
+        }
+
+    }
 
     // 다이얼로그 생성 함수
     private void getDialog() {
@@ -105,13 +252,16 @@ public class Register2Activity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            // 사진 촬영
             case REQUEST_TAKE_PHOTO:
                 if (resultCode == Activity.RESULT_OK) {
                     try {
-                        Log.d("REQUEST_TAKE_PHOTO", "OK");
+                        //Log.d("REQUEST_TAKE_PHOTO", "OK");
                         galleryAddPic();
 
                         a.civUserPicture.setImageURI(imageUri);
+
+
                     } catch (Exception e) {
                         Log.d("REQUEST_TAKE_PHOTO", e.toString());
                     }
@@ -122,6 +272,7 @@ public class Register2Activity extends AppCompatActivity {
                 }
                 break;
 
+            // 갤러리 호출
             case REQUEST_TAKE_ALBUM:
                 if (resultCode == Activity.RESULT_OK) {
 
@@ -139,6 +290,7 @@ public class Register2Activity extends AppCompatActivity {
                 }
                 break;
 
+            // 크롭 호출
             case REQUEST_IMAGE_CROP:
                 if (resultCode == Activity.RESULT_OK) {
 
@@ -149,19 +301,21 @@ public class Register2Activity extends AppCompatActivity {
         }
     }
 
+
+    //카메라 호출 함수
     public void captureCamera() {
 
         String state = Environment.getExternalStorageState();
 
         if (Environment.MEDIA_MOUNTED.equals(state)) {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); //카메라 호출
 
             if (intent.resolveActivity(getPackageManager()) != null) {
                 File photoFile = null;
                 try {
                     photoFile = createImageFile();
                 } catch (Exception e) {
-                    Log.d("captureCamera ERROR : ", e.toString());
+                    //Log.d("captureCamera ERROR : ", e.toString());
                 }
 
                 if (photoFile != null) {
@@ -179,62 +333,71 @@ public class Register2Activity extends AppCompatActivity {
 
     }
 
+    // 이미지 파일 만드는 메소드
     private File createImageFile() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + ".jpg";
-        File imageFile = null;
-        File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", "BOAA");
+        imageFileName = "JPEG_" + timeStamp + ".jpg"; // 이미지 이름 설정
+        File imageFile;
+        File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", "BOAA"); // 저장 경로
 
-        if (!storageDir.exists()) {
-            Log.d("currentPhotoPath : ", storageDir.toString());
+        uploadFilePath = storageDir.getAbsolutePath() + "/";
+        uploadFileName = imageFileName;
+
+
+        if (!storageDir.exists()) { // 존재하지 않다면 디렉토리 생성
+            //Log.d("currentPhotoPath : ", storageDir.toString());
             storageDir.mkdirs();
         }
 
-        imageFile = new File(storageDir, imageFileName);
-        currentPhotoPath = imageFile.getAbsolutePath();
+        imageFile = new File(storageDir, imageFileName); // 파일위치, 파일명
+        currentPhotoPath = imageFile.getAbsolutePath(); // 파일의 절대 경로 ?
 
         return imageFile;
 
     }
 
+    // 갤러리 호출 함수
     public void getAlbum() {
 
-        Log.d("getAlbum", "CALL");
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
+        //Log.d("getAlbum", "CALL");
+        Intent intent = new Intent(Intent.ACTION_PICK); // 갤러리 실행
+        intent.setType("image/*"); // image 타입의 파일들 모두 출력
         intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
         startActivityForResult(intent, REQUEST_TAKE_ALBUM);
 
     }
 
+    // 앨범에 사진 저장
     private void galleryAddPic() {
-        Log.d("galleryAddPic : ", "CALL");
+        //Log.d("galleryAddPic : ", "CALL");
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File file = new File(currentPhotoPath);
         Uri contentUri = Uri.fromFile(file);
         intent.setData(contentUri);
-        sendBroadcast(intent);
+        sendBroadcast(intent); // 폰의 앨범에 크롭된 사진을 갱신하는 함수, 안쓰면 크롭된 사진을 저장해도 보이지 않는다.
         Toast.makeText(this, "사진이 앨범에 저장되었습니다.", Toast.LENGTH_SHORT).show();
     }
 
+    // 이미지 자르기 호출
     public void cropImage() {
-        Log.d("cropImage", "CALL");
-        Log.d("cropImage", "photoURI : " + photoURI + " / albumURI : " + albumURI);
+        //Log.d("cropImage", "CALL");
+        //Log.d("cropImage", "photoURI : " + photoURI + " / albumURI : " + albumURI);
 
-        Intent intent = new Intent("com.android.camera.action.CROP");
+        Intent intent = new Intent("com.android.camera.action.CROP"); // 크롭 화면 호출
 
         intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.setDataAndType(photoURI, "image/*");
+        intent.setDataAndType(photoURI, "image/*"); // photoURI에 저장
         intent.putExtra("outputX", 200);
         intent.putExtra("outputy", 200);
         intent.putExtra("aspectX", 1);
         intent.putExtra("aspectX", 1);
         intent.putExtra("scale", true);
         intent.putExtra("output", albumURI);
-        startActivityForResult(intent, REQUEST_IMAGE_CROP);
+        startActivityForResult(intent, REQUEST_IMAGE_CROP); // 크롭 case 문으로 이동
     }
 
+    //권한 메소드
     private void checkPermission() {
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -280,6 +443,7 @@ public class Register2Activity extends AppCompatActivity {
         }
     }
 
+    // 유저 정보 등록
     private void register2Complete() {
 
         KeepLoginActivity keepLoginActivity = new KeepLoginActivity(this);
@@ -288,6 +452,7 @@ public class Register2Activity extends AppCompatActivity {
         userHeight = a.etHeight.getText().toString();
         userWeight = a.etWeight.getText().toString();
         userBirth = a.spnYear.getSelectedItem().toString();
+        userImgURL = "http://jbh9730.cafe24.com/uploads/" + uploadFileName;
 
         Response.Listener<String> responseListener = new Response.Listener<String>() {
             @Override
@@ -310,11 +475,12 @@ public class Register2Activity extends AppCompatActivity {
 
             }
         };
-        Register2Request register2Request = new Register2Request(userID, userHeight, userWeight, userGender, userBirth, responseListener);
+        Register2Request register2Request = new Register2Request(userID, userHeight, userWeight, userGender, userBirth, userImgURL, responseListener);
         RequestQueue queue = Volley.newRequestQueue(Register2Activity.this);
         queue.add(register2Request);
     }
 
+    //성별 선택
     private void genderSelect() {
 
         a.tvFemale.setOnClickListener(new View.OnClickListener() {

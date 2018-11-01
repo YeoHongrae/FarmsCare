@@ -12,7 +12,7 @@ public class Register2Request extends StringRequest {
     final static private String URL = "http://jbh9730.cafe24.com/UserRegister2.php";
     private Map<String, String> parameters;
 
-    public Register2Request(String userID, String userHeight, String userWeight, String userGender, String userBirth, Response.Listener<String> listener) {
+    public Register2Request(String userID, String userHeight, String userWeight, String userGender, String userBirth, String userImgURL, Response.Listener<String> listener) {
 
         super(Method.POST, URL, listener, null);
         parameters = new HashMap<>();
@@ -21,6 +21,7 @@ public class Register2Request extends StringRequest {
         parameters.put("userWeight", userWeight);
         parameters.put("userGender", userGender);
         parameters.put("userBirth", userBirth);
+        parameters.put("userImgURL", userImgURL);
 
     }
 

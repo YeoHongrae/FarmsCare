@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -28,10 +30,12 @@ import com.example.hong.boaaproject.mainActivity.calorie.CalorieTab;
 import com.example.hong.boaaproject.mainActivity.sleep.SleepTab;
 import com.example.hong.boaaproject.mainActivity.walk.WalkTab;
 import com.example.hong.boaaproject.mainActivity.water.WaterTab;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,7 +64,6 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
     private SensorManager sensorManager;
     private Sensor accelerormeterSensor;
 
-
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
 
         a = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false);
@@ -71,9 +74,9 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
         // 가속도 센서를 이용한 만보기 기능 구현 [출처: http://pulsebeat.tistory.com/44]
         sensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);//센서를 사용하기 위해 시스템서비스를 가져와 SensorManager타입으로 저장
         accelerormeterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); // 엑셀러로미터 센서(가속도 센서)
-        a.walkView.setText(str);
-        a.walkView.setClickable(false); // 해당 뷰 클릭 불가능 설정
-        a.walkView.setFocusable(false); // 해당 뷰 포커스 되지 않도록 설정
+        a.tvWalkView.setText(str);
+        a.tvWalkView.setClickable(false); // 해당 뷰 클릭 불가능 설정
+        a.tvWalkView.setFocusable(false); // 해당 뷰 포커스 되지 않도록 설정
 
 
         a.LL0.setOnClickListener(new View.OnClickListener() {
@@ -86,7 +89,7 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
             }
         });
 
-        a.userState.setOnClickListener(new View.OnClickListener() {
+        a.ivUserState.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -100,7 +103,7 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
             }
         });
 
-        a.userWater.setOnClickListener(new View.OnClickListener() {
+        a.ivUserWater.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent userWaterBtnIntent = new Intent(MainFragment.this.getActivity(), WaterTab.class);
@@ -108,7 +111,7 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
             }
         });
 
-        a.userSleep.setOnClickListener(new View.OnClickListener() {
+        a.ivUserSleep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent userSleepBtnIntent = new Intent(MainFragment.this.getActivity(), SleepTab.class);
@@ -116,7 +119,7 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
             }
         });
 
-        a.footSteps.setOnClickListener(new View.OnClickListener() {
+        a.ivUserSteps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent footsteptsBtnIntent = new Intent(MainFragment.this.getActivity(), WalkTab.class);
@@ -124,7 +127,7 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
             }
         });
 
-        a.userKcal.setOnClickListener(new View.OnClickListener() {
+        a.ivUserKcal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent userKcalBtnIntent = new Intent(MainFragment.this.getActivity(), CalorieTab.class); // 알아두기. getActivity  https://stackoverflow.com/questions/20241857/android-intent-cannot-resolve-constructor
@@ -177,7 +180,7 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
                 if (speed > SHAKE_THRESHOLD) {  //위에서 설정함 초기값: SHAKE_THRESHOLD = 800; 속도가 800 이상인 경우, 흔듦을 감지하도록 설정
                     count++; // 흔듦을 감지하면 걸음 수 올라가고 그 값을 받아서 화면에 출력
                     str = String.format("%d", count);
-                    a.walkView.setText(str);
+                    a.tvWalkView.setText(str);
 
                     a.btnStop.setOnClickListener(new View.OnClickListener() { // 걸음수 초기화 버튼 추가
                         @Override
@@ -185,7 +188,7 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
                             count = Integer.parseInt(str);
                             count = 0;
                             str = String.format("%d", count);
-                            a.walkView.setText(str);
+                            a.tvWalkView.setText(str);
                         }
                     });
 
@@ -218,6 +221,7 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
         @Override
         protected String doInBackground(Void... voids) {
 
+
             try {
 
                 URL url = new URL(target);
@@ -226,6 +230,7 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                 String temp;
                 StringBuilder stringBuilder = new StringBuilder();
+
 
                 while ((temp = bufferedReader.readLine()) != null) {//버퍼에서 한줄씩 읽으면서 템프에 넣는다
 
@@ -250,7 +255,7 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
         @Override
         protected void onPostExecute(String result) {
 
-            String userNicName, userHeight, userWeight;
+            String userNicName, userHeight, userWeight, userImgURL;
 
             try {
                 JSONObject jsonObject = new JSONObject(result);
@@ -260,11 +265,18 @@ public class MainFragment extends android.support.v4.app.Fragment implements Sen
                 userNicName = object.getString("userNicName");
                 userHeight = object.getString("userHeight");
                 userWeight = object.getString("userWeight");
-                UserInformationModel userInformationModel = new UserInformationModel(userNicName, userHeight, userWeight);
+                userImgURL = object.getString("userImgURL");
+                UserInformationModel userInformationModel = new UserInformationModel(userNicName, userHeight, userWeight, userImgURL);
 
                 a.tvNicName.setText(userInformationModel.getUserNicName());
                 a.tvHeight.setText(userInformationModel.getUserHeight());
                 a.tvWeight.setText(userInformationModel.getUserWeight());
+
+                Picasso.with(getActivity())
+                        .load(userImgURL)
+                        .into(a.ivMyPicture);
+
+                Toast.makeText(MainFragment.this.getContext(), userImgURL, Toast.LENGTH_SHORT).show();
 
             } catch (Exception e) {
                 e.printStackTrace();

@@ -3,13 +3,17 @@ package com.example.hong.boaaproject.mainActivity;
 public class UserInformationModel {
 
 
-    String userNicName, userHeight, userWeight;
+    String userNicName;
+    String userHeight;
+    String userWeight;
+    String userImgURL;
 
-    public UserInformationModel(String userNicName, String userHeight, String userWeight) {
+    public UserInformationModel(String userNicName, String userHeight, String userWeight, String userImgURL) {
 
         this.userNicName = userNicName;
         this.userHeight = userHeight;
         this.userWeight = userWeight;
+        this.userImgURL = userImgURL;
     }
 
     public String getUserNicName() {
@@ -34,5 +38,13 @@ public class UserInformationModel {
 
     public void setUserWeight(String userWeight) {
         this.userWeight = userWeight;
+    }
+
+    public String getUserImgURL() {
+        return userImgURL;
+    }
+
+    public void setUserImgURL(String userImgURL) {
+        this.userImgURL = userImgURL;
     }
 }

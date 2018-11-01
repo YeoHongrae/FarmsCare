@@ -30,7 +30,7 @@ public class SelectDialog extends Dialog {
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((Register2Activity) Register2Activity.mContext).captureCamera(); //TODO 공유탭이랑 겹치니까 적절한 조치 필요ㅣ..
+               ((Register2Activity) Register2Activity.mContext).captureCamera(); //TODO 공유탭이랑 겹치니까 적절한 조치 필요ㅣ..
                 dismiss(); // 다이얼로그 close
             }
         });
